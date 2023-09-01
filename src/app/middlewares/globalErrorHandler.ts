@@ -10,7 +10,7 @@ import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 import handleClientError from '../../errors/handleClientError';
 import handleZodError from '../../errors/handleZodError';
-// import { IGenericErrorMessage } from '../../interfaces/error';
+import { IGenericErrorMessage } from '../../interfaces/error';
 
 
 const globalErrorHandler: ErrorRequestHandler = (
