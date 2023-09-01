@@ -11,7 +11,7 @@ const insertIntoDb = catchAsync (async (req:Request, res:Response) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success:true,
-        message:"Data Inserted Successfully",
+        message:"User created successfully!",
         data:result
 
     })
@@ -23,7 +23,7 @@ const getAllFromDb = catchAsync (async (req:Request, res:Response) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success:true,
-        message:"Data retrieve Successfully",
+        message:"Users retrieved successfully",
         data:result
 
     })
