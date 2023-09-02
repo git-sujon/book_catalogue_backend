@@ -49,17 +49,13 @@ const userLogin = async (payload: IUserLogin): Promise<string> => {
   }
 
   const userId = isUserExist.id;
-  const userRole = isUserExist.role;
+  const role = isUserExist.role;
 
   const token = jwtHelpers.createToken(
-    { userId, userRole },
+    { userId, role },
     config.jwt.secret as string,
     config.jwt.expires_in as string,
   );
-
-  const deCodedToken = jwtHelpers.verifyToken(token, config.jwt.secret as string)
-
-  console.log("deCodedToken:", deCodedToken)
 
 
   return token;
