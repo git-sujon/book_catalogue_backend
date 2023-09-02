@@ -7,11 +7,11 @@ const route = express.Router();
 
 route.get('/', UserController.getAllFromDb);
 route.get('/:id', UserController.getSingleById);
-route.get(
+route.patch(
   '/:id',
   validateRequest(UserValidation.updateData),
   UserController.updateData,
 );
-route.get('/:id', UserController.deleteSingleData);
+route.delete('/:id', UserController.deleteSingleData);
 
 export const UserRoute = route;

@@ -9,8 +9,8 @@ const userSignUp = catchAsync (async (req:Request, res:Response) => {
     const result = await UserServices.userSignUp(payload)
 
     sendResponse(res, {
-        statusCode: httpStatus.OK,
         success:true,
+        statusCode: httpStatus.OK,
         message:"User created successfully!",
         data:result
 
@@ -21,8 +21,8 @@ const   userLogin = catchAsync (async (req:Request, res:Response) => {
     const result = await UserServices.  userLogin(payload)
 
     sendResponse(res, {
-        statusCode: httpStatus.OK,
         success:true,
+        statusCode: httpStatus.OK,
         message:"User signin successfully!",
         data:result
 

@@ -1,30 +1,41 @@
 import { Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
-import { UserServices } from "./user.services";
+import { BookServices } from "./book.services";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 
-
-const getAllFromDb = catchAsync (async (req:Request, res:Response) => {
-
-    const result = await UserServices.getAllFromDb()
+const insertIntoDb = catchAsync (async (req:Request, res:Response) => {
+    const payload = req.body
+    const result = await BookServices.insertIntoDb(payload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success:true,
-        message:"Users retrieved successfully",
+        message:"Book created successfully!",
+        data:result
+
+    })
+})
+const getAllFromDb = catchAsync (async (req:Request, res:Response) => {
+
+    const result = await BookServices.getAllFromDb()
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success:true,
+        message:"Books retrieved successfully",
         data:result
 
     })
 })
 const getSingleById = catchAsync (async (req:Request, res:Response) => {
     const {id} = req.params
-    const result = await UserServices.getSingleById(id)
+    const result = await BookServices.getSingleById(id)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success:true,
-        message:"User getched successfully",
+        message:"Data retrieve Successfully",
         data:result
 
     })
@@ -32,12 +43,12 @@ const getSingleById = catchAsync (async (req:Request, res:Response) => {
 const updateData = catchAsync (async (req:Request, res:Response) => {
     const {id} = req.params
     const payload = req.body
-    const result = await UserServices.updateData(id, payload)
+    const result = await BookServices.updateData(id, payload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success:true,
-        message:"User updated successfully",
+        message:"Data update Successfully",
         data:result
 
     })
@@ -45,12 +56,12 @@ const updateData = catchAsync (async (req:Request, res:Response) => {
 
 const deleteSingleData = catchAsync (async (req:Request, res:Response) => {
     const {id} = req.params
-    const result = await UserServices.deleteSingleData(id)
+    const result = await BookServices.deleteSingleData(id)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success:true,
-        message:"Uers deleted successfully",
+        message:"Data deleted Successfully",
         data:result
 
     })
@@ -58,7 +69,8 @@ const deleteSingleData = catchAsync (async (req:Request, res:Response) => {
 
 
 
-export const UserController = {
+export const BookController = {
+    insertIntoDb,
     getAllFromDb,
     getSingleById,
     updateData,

@@ -6,8 +6,9 @@ import { IUserLogin } from './auth.interface';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import excludeFields from '../../../helpers/excludingfieldsHelpers';
 
-const userSignUp = async (payload: User): Promise<User> => {
+const userSignUp = async (payload: User): Promise<Partial<User |null>> => {
   // Hash the password asynchronously
   const hash = await bcrypt.hash(
     payload.password,
@@ -15,11 +16,14 @@ const userSignUp = async (payload: User): Promise<User> => {
   );
   payload.password = hash;
 
-  const result = await prisma.user.create({
+   const createdUser = await prisma.user.create({
     data: payload,
   });
 
-  return result;
+  const keysToExclude: (keyof User)[] = ['password'];
+  const updatedUser = excludeFields(createdUser, keysToExclude);
+
+return updatedUser
 };
 
 const userLogin = async (payload: IUserLogin): Promise<string> => {
