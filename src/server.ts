@@ -1,50 +1,35 @@
-import app from './app'
-import { Server } from 'http'
-import config from './config'
-const port = config.port
-
-process.on('uncaughtException', error => {
-  console.log('Error', error)
-  process.exit(1)
-})
-
-let server: Server
+import { Server } from 'http';
+import app from './app';
+import config from './config';
 
 async function connectToServer() {
-  try {
+  const server: Server = app.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`);
+  });
 
-    server = app.listen(port, () => {
-      console.log(`listening on port ${port}`)
-    })
-
-    if (server) {
-        server.close(() => {
-          console.log('Server closed');
-        });
-      }
-      process.exit(1);
-    
-
-
-  } catch (error) {
-    console.error('Database connection Error:', error)
-  }
-
-  process.on('unhandledRejection', error => {
-    console.log('unhandledRejection , Server is closed...')
+  const exitHandler = () => {
     if (server) {
       server.close(() => {
-        console.log('Error', error)
-      })
+        console.log('Server closed');
+      });
     }
-  })
+    process.exit(1);
+  };
+
+  const unexpectedErrorHandler = (error: unknown) => {
+    console.error(error);
+    exitHandler();
+  };
+
+  process.on('uncaughtException', unexpectedErrorHandler);
+  process.on('unhandledRejection', unexpectedErrorHandler);
+
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received');
+    if (server) {
+      server.close();
+    }
+  });
 }
 
-connectToServer().catch(err => console.error(err))
-
-process.on('SIGTERM', () => {
-  console.log('SIGTERM is received')
-  if (server) {
-    server.close()
-  }
-})
+connectToServer();

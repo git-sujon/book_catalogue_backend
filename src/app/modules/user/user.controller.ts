@@ -4,18 +4,7 @@ import { UserServices } from "./user.services";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 
-const insertIntoDb = catchAsync (async (req:Request, res:Response) => {
-    const payload = req.body
-    const result = await UserServices.insertIntoDb(payload)
 
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success:true,
-        message:"User created successfully!",
-        data:result
-
-    })
-})
 const getAllFromDb = catchAsync (async (req:Request, res:Response) => {
 
     const result = await UserServices.getAllFromDb()
@@ -70,7 +59,6 @@ const deleteSingleData = catchAsync (async (req:Request, res:Response) => {
 
 
 export const UserController = {
-    insertIntoDb,
     getAllFromDb,
     getSingleById,
     updateData,
