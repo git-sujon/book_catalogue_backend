@@ -16,9 +16,10 @@ const insertIntoDb = async (
   );
 
   if (!isAuthenticate) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
   }
-console.log(isAuthenticate)
+
+
   const { orderedBooks } = payload;
 
   const completedOrder = await prisma.$transaction(async orderTransaction => {
@@ -61,19 +62,59 @@ console.log(isAuthenticate)
   throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to Create Orders');
 };
 
-const getAllFromDb = async (): Promise<Order[]> => {
+const getAllFromDb = async (authorization:string): Promise<Order[]> => {
+
+  const isAuthenticate = await jwtHelpers.verifyToken(
+    authorization,
+    config.jwt.secret as string,
+  );
+
+
+
+
+  if (!isAuthenticate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
+  }
+
+  if(isAuthenticate.role === "customer"){
+    const result = await prisma.order.findMany({
+      where:{
+        userId: isAuthenticate.userId,
+      },
+      include: {
+        orderedBooks: true,
+      },
+    });
+    return result;
+  }
+
+ else{
   const result = await prisma.order.findMany({
     include: {
       orderedBooks: true,
     },
   });
   return result;
+ }
+
 };
 
-const getSingleById = async (id: string): Promise<Order | null> => {
+const getSingleById = async ( authorization:string): Promise<Order | null> => {
+
+  const isAuthenticate = await jwtHelpers.verifyToken(
+    authorization,
+    config.jwt.secret as string,
+  );
+
+  if (!isAuthenticate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
+  }
+
+
+
   const result = await prisma.order.findUnique({
     where: {
-      id,
+      id: isAuthenticate.userId,
     },
   });
 

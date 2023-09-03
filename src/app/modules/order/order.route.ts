@@ -14,8 +14,12 @@ route.post(
   validateRequest(OrderValidation.insertIntoDb),
   OrderController.insertIntoDb,
 );
-route.get('/', OrderController.getAllFromDb);
-route.get('/:id', OrderController.getSingleById);
+route.get(
+  '/',
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
+  OrderController.getAllFromDb,
+);
+route.get('/:id', auth(ENUM_USER_ROLE.CUSTOMER), OrderController.getSingleById);
 route.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),
