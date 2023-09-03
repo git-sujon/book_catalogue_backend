@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 
 const insertIntoDb = catchAsync (async (req:Request, res:Response) => {
     const payload = req.body
+
     const result = await OrderServices.insertIntoDb(payload)
 
     sendResponse(res, {
@@ -40,19 +41,7 @@ const getSingleById = catchAsync (async (req:Request, res:Response) => {
 
     })
 })
-const updateData = catchAsync (async (req:Request, res:Response) => {
-    const {id} = req.params
-    const payload = req.body
-    const result = await OrderServices.updateData(id, payload)
 
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success:true,
-        message:"Order updated successfully",
-        data:result
-
-    })
-})
 
 const deleteSingleData = catchAsync (async (req:Request, res:Response) => {
     const {id} = req.params
@@ -73,6 +62,5 @@ export const OrderController = {
     insertIntoDb,
     getAllFromDb,
     getSingleById,
-    updateData,
     deleteSingleData
 }
