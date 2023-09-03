@@ -42,7 +42,6 @@ const userLogin = async (payload: IUserLogin): Promise<string> => {
     isUserExist.password,
   );
 
-  console.log('isPasswordMatch:', isPasswordMatch);
 
   if (!isPasswordMatch) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Password doesn't match");

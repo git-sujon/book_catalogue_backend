@@ -1,28 +1,32 @@
 import { User } from '@prisma/client';
 import prisma from '../../../shared/prisma';
-import excludeFields from '../../../helpers/excludingfieldsHelpers';
-import bcrypt from 'bcrypt'
 import config from '../../../config';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 
+const getProfileData = async (
+  authorization: string,
+): Promise<Partial<User | null>> => {
+  const isAuthenticate = await jwtHelpers.verifyToken(
+    authorization,
+    config.jwt.secret as string,  
+  );
 
+  if (!isAuthenticate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
+  }
 
-const getProfileData = async (id: string): Promise<Partial<User | undefined>> => {
-  const result: User | null = await prisma.user.findUnique({
+  const result = await prisma.user.findUnique({
     where: {
-      id,
+      id: isAuthenticate.userId,
+      role: isAuthenticate.role,
     },
   });
 
-  if (!result) {
-    return undefined;
-  }
-
-  const keysToExclude: (keyof User)[] = ['password'];
-  const updatedResult = excludeFields(result, keysToExclude);
-
-  return updatedResult;
+  return result;
 };
 
 export const ProfileServices = {
-  getProfileData
+  getProfileData,
 };

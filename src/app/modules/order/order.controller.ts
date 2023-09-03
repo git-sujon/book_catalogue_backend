@@ -28,29 +28,28 @@ const insertIntoDb = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllFromDb = catchAsync(async (req: Request, res: Response) => {
-    const { authorization } = req.headers;
-    if (authorization) {
-      const result = await OrderServices.getAllFromDb(authorization);
-  
-      sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: 'Orders retrieved successfully',
-        data: result,
-      });
-    } else {
-      // Handle the case where authorization is undefined
-      sendResponse(res, {
-        statusCode: httpStatus.UNAUTHORIZED,
-        success: false,
-        message: 'Your are Not Authorized',
-      });
-    }
+  const { authorization } = req.headers;
+  if (authorization) {
+    const result = await OrderServices.getAllFromDb(authorization);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Orders retrieved successfully',
+      data: result,
+    });
+  } else {
+    // Handle the case where authorization is undefined
+    sendResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: 'Your are Not Authorized',
+    });
+  }
 });
 
-
 const getSingleById = catchAsync(async (req: Request, res: Response) => {
-    const {id} = req.params
+  const { id } = req.params;
   const { authorization } = req.headers;
   if (authorization) {
     const result = await OrderServices.getSingleById(id, authorization);
