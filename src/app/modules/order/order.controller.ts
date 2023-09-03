@@ -50,9 +50,10 @@ const getAllFromDb = catchAsync(async (req: Request, res: Response) => {
 
 
 const getSingleById = catchAsync(async (req: Request, res: Response) => {
+    const {id} = req.params
   const { authorization } = req.headers;
   if (authorization) {
-    const result = await OrderServices.getSingleById(authorization);
+    const result = await OrderServices.getSingleById(id, authorization);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

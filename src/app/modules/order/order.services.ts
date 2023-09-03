@@ -19,7 +19,6 @@ const insertIntoDb = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
   }
 
-
   const { orderedBooks } = payload;
 
   const completedOrder = await prisma.$transaction(async orderTransaction => {
@@ -62,23 +61,19 @@ const insertIntoDb = async (
   throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to Create Orders');
 };
 
-const getAllFromDb = async (authorization:string): Promise<Order[]> => {
-
+const getAllFromDb = async (authorization: string): Promise<Order[]> => {
   const isAuthenticate = await jwtHelpers.verifyToken(
     authorization,
     config.jwt.secret as string,
   );
 
-
-
-
   if (!isAuthenticate) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
   }
 
-  if(isAuthenticate.role === "customer"){
+  if (isAuthenticate.role === 'customer') {
     const result = await prisma.order.findMany({
-      where:{
+      where: {
         userId: isAuthenticate.userId,
       },
       include: {
@@ -86,21 +81,19 @@ const getAllFromDb = async (authorization:string): Promise<Order[]> => {
       },
     });
     return result;
+  } else {
+    const result = await prisma.order.findMany({
+      include: {
+        orderedBooks: true,
+      },
+    });
+    return result;
   }
-
- else{
-  const result = await prisma.order.findMany({
-    include: {
-      orderedBooks: true,
-    },
-  });
-  return result;
- }
-
 };
-
-const getSingleById = async ( authorization:string): Promise<Order | null> => {
-
+const getSingleById = async (
+  id: string,
+  authorization: string,
+): Promise<Order[]> => {
   const isAuthenticate = await jwtHelpers.verifyToken(
     authorization,
     config.jwt.secret as string,
@@ -110,15 +103,25 @@ const getSingleById = async ( authorization:string): Promise<Order | null> => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Your are Not Authorized');
   }
 
-
-
-  const result = await prisma.order.findUnique({
-    where: {
-      id: isAuthenticate.userId,
-    },
-  });
-
-  return result;
+  if (isAuthenticate.role === 'customer') {
+    const result = await prisma.order.findMany({
+      where: {
+        id: id,
+        userId: isAuthenticate.userId,
+      },
+      include: {
+        orderedBooks: true,
+      },
+    });
+    return result;
+  } else {
+    const result = await prisma.order.findMany({
+      include: {
+        orderedBooks: true,
+      },
+    });
+    return result;
+  }
 };
 
 const deleteSingleData = async (id: string): Promise<Order | null> => {
