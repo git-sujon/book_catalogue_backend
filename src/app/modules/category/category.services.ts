@@ -10,7 +10,7 @@ const insertIntoDb = async (payload: Category): Promise<Category> => {
 };
 
 const getAllFromDb = async (): Promise<Category[]> => {
-  const result = prisma.category.findMany();
+  const result = await prisma.category.findMany();
   return result;
 };
 
