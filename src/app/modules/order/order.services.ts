@@ -3,13 +3,29 @@ import prisma from '../../../shared/prisma';
 import ApiError from '../../../errors/ApiError';
 import httpStatus from 'http-status';
 import { IOrderData } from './order.interface';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
+import config from '../../../config';
 
-const insertIntoDb = async (payload: IOrderData):Promise<IOrderData |null> => {
-  const { orderedBooks, ...orderData } = payload;
+const insertIntoDb = async (
+  authorization: string,
+  payload: IOrderData,
+): Promise<IOrderData | null> => {
+  const isAuthenticate = await jwtHelpers.verifyToken(
+    authorization,
+    config.jwt.secret as string,
+  );
+
+  if (!isAuthenticate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User Not Found');
+  }
+console.log(isAuthenticate)
+  const { orderedBooks } = payload;
 
   const completedOrder = await prisma.$transaction(async orderTransaction => {
     const orderCreate = await orderTransaction.order.create({
-      data: orderData,
+      data: {
+        userId: isAuthenticate.userId,
+      },
     });
 
     if (!orderCreate) {
@@ -29,18 +45,17 @@ const insertIntoDb = async (payload: IOrderData):Promise<IOrderData |null> => {
     }
     return orderCreate;
   });
-  if(completedOrder){
+  if (completedOrder) {
     const responseData = await prisma.order.findUnique({
-      where:{
-        id:completedOrder.id
+      where: {
+        id: completedOrder.id,
       },
-      include:{
-        orderedBooks:true
-      }
-    
-    })
+      include: {
+        orderedBooks: true,
+      },
+    });
 
-    return responseData
+    return responseData;
   }
 
   throw new ApiError(httpStatus.BAD_REQUEST, 'Unable to Create Orders');
@@ -48,9 +63,9 @@ const insertIntoDb = async (payload: IOrderData):Promise<IOrderData |null> => {
 
 const getAllFromDb = async (): Promise<Order[]> => {
   const result = await prisma.order.findMany({
-    include:{
-      orderedBooks:true
-    }
+    include: {
+      orderedBooks: true,
+    },
   });
   return result;
 };
@@ -64,7 +79,6 @@ const getSingleById = async (id: string): Promise<Order | null> => {
 
   return result;
 };
-
 
 const deleteSingleData = async (id: string): Promise<Order | null> => {
   const result = await prisma.order.delete({

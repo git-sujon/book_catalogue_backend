@@ -1,11 +1,8 @@
-export type IOrderData ={
-    userId: string;
-    status: "pending" | "shipped" | "delivered"; 
-    orderedBooks: OrderedBookData[];
-  }
-  
- export type OrderedBookData = {
-    bookId: string;
-    quantity: number;
-  }
-  
+export type OrderedBookData = {
+  bookId: string;
+  quantity: number;
+};
+
+export type IOrderData = {
+  orderedBooks: OrderedBookData[];
+};

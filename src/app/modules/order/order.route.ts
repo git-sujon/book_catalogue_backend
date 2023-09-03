@@ -10,6 +10,7 @@ const route = express.Router();
 
 route.post(
   '/',
+  auth(ENUM_USER_ROLE.CUSTOMER),
   validateRequest(OrderValidation.insertIntoDb),
   OrderController.insertIntoDb,
 );
@@ -17,7 +18,7 @@ route.get('/', OrderController.getAllFromDb);
 route.get('/:id', OrderController.getSingleById);
 route.delete(
   '/:id',
-  // auth(ENUM_USER_ROLE.ADMIN),
+  auth(ENUM_USER_ROLE.ADMIN),
   OrderController.deleteSingleData,
 );
 

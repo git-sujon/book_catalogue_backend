@@ -1,4 +1,3 @@
-import { OrderStatusEnum } from '@prisma/client';
 import { z } from 'zod';
 
 const orderedBookSchema = z.object({
@@ -14,16 +13,6 @@ const orderedBookSchema = z.object({
 
 const insertIntoDb = z.object({
   body: z.object({
-    userId: z.string({
-      required_error: 'userId is required',
-    }),
-    status: z.enum(
-      [...Object.values(OrderStatusEnum)] as [string, ...string[]],
-      {
-        required_error:
-          "Status is required and must be 'pending', 'shipped', 'delivered'",
-      },
-    ),
     orderedBooks: z.array(orderedBookSchema),
   }),
 });
